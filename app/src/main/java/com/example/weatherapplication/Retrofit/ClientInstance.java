@@ -2,7 +2,7 @@ package com.example.weatherapplication.Retrofit;
 
 import com.example.weatherapplication.model.Example;
 
-import retrofit2.Call;
+import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Query;
@@ -14,6 +14,6 @@ public interface ClientInstance {
     })
 
     @GET("/weather")
-    Call<Example> getCurrentCity(@Query("q") String place);
+    Observable<Example> getCurrentCity(@Query("q") String place);
 
 }

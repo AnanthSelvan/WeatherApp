@@ -20,8 +20,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        RecyclerviewBinding recyclerviewBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.recyclerview,parent,false);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        RecyclerviewBinding recyclerviewBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.recyclerview, parent, false);
         return new ViewHolder(recyclerviewBinding);
     }
 
@@ -36,7 +36,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         return itemViewModel.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public RecyclerviewBinding recyclerviewBinding;
 
         public ViewHolder(RecyclerviewBinding recyclerviewBinding) {
@@ -44,9 +44,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             this.recyclerviewBinding = recyclerviewBinding;
         }
 
-        public void bind(ItemViewModel itemViewModel){
-           recyclerviewBinding.setItemViewModel(itemViewModel);
-           recyclerviewBinding.executePendingBindings();
+        public void bind(ItemViewModel itemViewModel) {
+            recyclerviewBinding.setItemViewModel(itemViewModel);
+            recyclerviewBinding.executePendingBindings();
         }
     }
-            }
+}
