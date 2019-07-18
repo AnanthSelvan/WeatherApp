@@ -6,59 +6,65 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import android.util.Log;
 
 import com.example.weatherapplication.Adapter.RecyclerAdapter;
-import com.example.weatherapplication.Retrofit.ClientInstance;
-import com.example.weatherapplication.Retrofit.ServiceLayer;
+import com.example.weatherapplication.Retrofit.ServiceManager;
 import com.example.weatherapplication.model.Example;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import javax.inject.Inject;
 
 import static android.content.ContentValues.TAG;
 
 public class MyViewModel implements LifecycleObserver {
 
     public List<ItemViewModel> itemViewModelList = new ArrayList<>();
-    public RecyclerAdapter recyclerAdapter = new RecyclerAdapter(itemViewModelList);
 
     public List<String> cityNames = new ArrayList<>();
 
+    RecyclerAdapter recyclerAdapter;
+
+    ServiceManager serviceManager;
+    ItemViewModel itemViewModel;
+
+    @Inject
+    public MyViewModel(ServiceManager serviceManager,ItemViewModel itemViewModel) {
+        this.serviceManager = serviceManager;
+        this.itemViewModel = itemViewModel;
+    }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     public void init() {
         cityNames();
         getCityWeather();
     }
+
     public void getCityWeather() {
         for (String city : cityNames) {
-            ClientInstance client = ServiceLayer.getRetrofitInstance().create(ClientInstance.class);
-
-            Call<Example> call = client.getCurrentCity(city);
-
-            call.enqueue(new Callback<Example>() {
-                @Override
-                public void onResponse(Call<Example> call, Response<Example> response) {
-                    Example example = response.body();
-                    if (example != null) {
-                         ItemViewModel itemViewModel = new ItemViewModel();
-                        itemViewModel.setCity(example.name);
-                        itemViewModel.setDescription(example.weather.get(0).description);
-                        itemViewModel.setTemperature(String.valueOf(example.getMainValue().temp));
-                        itemViewModelList.add(itemViewModel);
-                    }
-                    recyclerAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onFailure(Call<Example> call, Throwable t) {
-                    Log.d(TAG, "onFailure: Something went wrong");
-                }
-            });
+            serviceManager.getCurrentCity(city).subscribe(this::response, this::failure);
         }
     }
+
+    public void response(Example example) {
+
+        Log.d(TAG, "response() returned: " + example);
+
+        ItemViewModel itemViewModel1 = new ItemViewModel();
+
+        if (example != null) {
+            itemViewModel1.setCity(example.name);
+            itemViewModel1.setDescription(example.weather.get(0).description);
+            itemViewModel1.setTemperature(String.valueOf(example.getMainValue().temp));
+            itemViewModelList.add(itemViewModel1);
+        }
+            recyclerAdapter.notifyDataSetChanged();
+        }
+
+
+    public void failure(Throwable throwable) {
+        Log.e(TAG, "failure: Error  " + throwable.getLocalizedMessage());
+    }
+
 
     public void cityNames() {
         cityNames.add("chennai");
@@ -71,7 +77,7 @@ public class MyViewModel implements LifecycleObserver {
         cityNames.add("New york");
     }
 
-    public RecyclerAdapter getRecyclerAdapter(){
-        return recyclerAdapter;
+    public RecyclerAdapter getRecyclerAdapter() {
+        return recyclerAdapter = new RecyclerAdapter(itemViewModelList);
     }
 }

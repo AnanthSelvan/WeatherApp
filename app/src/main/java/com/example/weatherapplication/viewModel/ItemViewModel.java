@@ -2,7 +2,14 @@ package com.example.weatherapplication.viewModel;
 
 import android.databinding.BaseObservable;
 
+import javax.inject.Inject;
+
 public class ItemViewModel extends BaseObservable {
+
+
+    @Inject
+    public ItemViewModel() {
+    }
 
     public String city;
     public String description;
